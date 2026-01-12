@@ -675,7 +675,7 @@
       if (!window.framesData) return;
       window.framesData.forEach((src, index) => {
         const img = new Image();
-        img.crossOrigin = "anonymous";
+        // img.crossOrigin = "anonymous"; // Removed to fix file:// protocol issues
         img.src = src;
         img.onload = () => {
           loadedFrameImages[index] = img;
@@ -788,22 +788,11 @@
       const offsetX = (CANVAS_SIZE - drawW) / 2;
       const offsetY = (CANVAS_SIZE - drawH) / 2;
 
-      const frameImg = loadedFrameImages[currentFrameIndex];
-
-      // Draw uploaded image first
       ctx.drawImage(uploadedImage, offsetX, offsetY, drawW, drawH);
 
-      // Draw frame on top
-      if (frameImg) {
-        if (frameImg.complete && frameImg.naturalWidth > 0) {
-          ctx.drawImage(frameImg, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
-        } else {
-          // Frame not ready? Force re-render when it is.
-          if (!frameImg.hasRenderListener) {
-            frameImg.hasRenderListener = true;
-            frameImg.onload = () => scheduleRender();
-          }
-        }
+      const frameImg = loadedFrameImages[currentFrameIndex];
+      if (frameImg && frameImg.complete && frameImg.naturalWidth > 0) {
+        ctx.drawImage(frameImg, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
       }
     }
 
