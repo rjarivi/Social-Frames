@@ -1,4 +1,19 @@
-# How to Add Your Brand to Social Frames
+# Social Frames
+
+![License](https://img.shields.io/github/license/rjarivi/Social-Frames)
+![Issues](https://img.shields.io/github/issues/rjarivi/Social-Frames)
+![Forks](https://img.shields.io/github/forks/rjarivi/Social-Frames)
+![Stars](https://img.shields.io/github/stars/rjarivi/Social-Frames)
+
+**Social Frames** is an open-source tool that lets communities create and share custom profile picture frames. Users can easily upload their photo, apply a branded frame, and download the result.
+
+## Features
+- 🎨 **Visual Editor**: Drag, zoom, and fit your image within the frame.
+- 🖼️ **Multiple Frames**: Support for multiple frame options per community.
+- 📱 **Responsive Design**: Works on mobile and desktop.
+- ⚡ **Fast & Private**: Processing happens in the browser; images aren't stored on a server.
+
+## How to Add Your Brand to Social Frames
 
 We welcome community contributions! You can add your own brand/community frames to this site.
 

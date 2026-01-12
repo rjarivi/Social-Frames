@@ -1,4 +1,27 @@
 {
+  "name": "social-frames",
+  "version": "1.0.0",
+  "description": "A community-focused profile picture frame generator.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rjarivi/Social-Frames.git"
+  },
+  "keywords": [
+    "social",
+    "frames",
+    "profile-picture",
+    "generator",
+    "community"
+  ],
+  "author": "rjarivi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rjarivi/Social-Frames/issues"
+  },
+  "homepage": "https://github.com/rjarivi/Social-Frames#readme",
   "devDependencies": {
     "autoprefixer": "^10.4.23",
     "postcss": "^8.5.6",
