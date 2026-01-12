@@ -431,7 +431,8 @@
           </div>
           <h3 class="option-h">Developer?</h3>
           <p class="option-p">Fork the repo, add your assets, and submit a Pull Request.</p>
-          <a href="https://github.com/your-repo/social-frames" target="_blank" class="btn-action">View Instructions</a>
+          <a href="https://github.com/rjarivi/Social-Frames#option-2-the-developer-way-github" target="_blank"
+            class="btn-action">View Instructions</a>
         </div>
       </div>
     </div>
@@ -448,18 +449,9 @@
     const modal = document.getElementById('add-modal');
 
     // Modal Logic
-    function openModal() {
-      modal.classList.add('open');
-    }
-
-    function closeModal() {
-      modal.classList.remove('open');
-    }
-
-    // Close on outside click
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
+    function openModal() { modal.classList.add('open'); }
+    function closeModal() { modal.classList.remove('open'); }
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
     function renderCards(filter = '') {
       grid.innerHTML = '';
@@ -503,7 +495,6 @@
     if (window.brands) {
       renderCards();
     } else {
-      // Fallback or retry if script loading is slow (unlikely for local)
       console.error("Brands data not loaded");
       grid.innerHTML = "<p style='color: white;'>Failed to load brand data.</p>";
     }

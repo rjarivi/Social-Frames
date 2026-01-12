@@ -598,50 +598,9 @@
     </div>
   </div>
 
-  <script src="assets/js/data.js"></script>
-
   <script>
     // Initialize Icons
     lucide.createIcons();
-
-    // 1. Get Config
-    const params = new URLSearchParams(window.location.search);
-    const brandId = params.get('brand') || 'parti';
-    const brandsData = window.brands || [];
-    const brand = brandsData.find(b => b.id === brandId) || brandsData[0];
-
-    // 2. Setup UI
-    if (brand) {
-      document.getElementById('brand-title').textContent = brand.name + (brand.name.includes("Frame") ? "" : " Frame");
-      document.getElementById('brand-desc').textContent = brand.description;
-
-      // 3. Setup Frames
-      const framesData = brand.frames;
-      window.framesData = framesData; // Make framesData accessible globally for preloadFrames
-    }
-
-    const loadedFrameImages = [];
-    let currentFrameIndex = 0;
-
-    // Check if brand exists before setting up frames
-    if (brand) {
-      const frameGrid = document.getElementById('frame-grid');
-      frameGrid.innerHTML = ''; // clear
-
-      brand.frames.forEach((src, index) => {
-        const div = document.createElement('div');
-        div.className = `frame-option ${index === 0 ? 'selected' : ''}`;
-        div.onclick = () => selectFrame(index);
-
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = `Frame ${index + 1}`;
-        img.onerror = () => { img.style.opacity = '0.3'; } // Fallback visual
-
-        div.appendChild(img);
-        frameGrid.appendChild(div);
-      });
-    }
 
     // --- Core Logic ---
     let uploadedImage = null;
@@ -650,6 +609,7 @@
     let renderRequested = false;
     const CANVAS_SIZE = 1080;
 
+    // Elements
     const canvas = document.getElementById('main-canvas');
     const ctx = canvas.getContext('2d');
     const uploadInput = document.getElementById('upload-input');
@@ -662,28 +622,65 @@
     const btnFit = document.getElementById('btn-fit');
     const zoomSlider = document.getElementById('zoom-slider');
 
-    // Attach listeners
-    btnFill.onclick = () => setFitMode('cover');
-    btnFit.onclick = () => setFitMode('contain');
-    zoomSlider.oninput = (e) => updateZoom(e.target.value);
-    downloadBtn.onclick = handleDownload;
+    // Globals for frames
+    let loadedFrameImages = [];
+    let currentFrameIndex = 0;
+    let currentBrand = null;
 
-    // Preload
+    // 1. Fetch Config
+    fetch('assets/data.json')
+      .then(r => r.json())
+      .then(brands => {
+        initEditor(brands);
+      })
+      .catch(err => console.error("Failed to load brands:", err));
+
+    function initEditor(brands) {
+      const params = new URLSearchParams(window.location.search);
+      const brandId = params.get('brand') || 'parti';
+      currentBrand = brands.find(b => b.id === brandId) || brands[0]; // Fallback to first
+
+      // Set UI
+      document.getElementById('brand-title').textContent = currentBrand.name + (currentBrand.name.includes("Frame") ? "" : " Frame");
+      document.getElementById('brand-desc').textContent = currentBrand.description || 'Custom Frames';
+
+      // Setup Frames Grid
+      const frameGrid = document.getElementById('frame-grid');
+      frameGrid.innerHTML = '';
+
+      currentBrand.frames.forEach((src, index) => {
+        const div = document.createElement('div');
+        div.className = `frame-option ${index === 0 ? 'selected' : ''}`;
+        div.onclick = () => selectFrame(index);
+
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = `Frame ${index + 1}`;
+        img.onerror = () => { img.style.opacity = '0.3'; }
+
+        div.appendChild(img);
+        frameGrid.appendChild(div);
+      });
+
+      // Start preloading
+      preloadFrames();
+    }
+
     function preloadFrames() {
+      if (!currentBrand) return;
       let loadedCount = 0;
-      framesData.forEach((src, index) => {
+      currentBrand.frames.forEach((src, index) => {
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.src = src;
         img.onload = () => {
           loadedFrameImages[index] = img;
           loadedCount++;
-          if (loadedCount === framesData.length && uploadedImage) scheduleRender();
+          if (loadedCount === currentBrand.frames.length && uploadedImage) scheduleRender();
         };
         loadedFrameImages[index] = img;
       });
     }
-    preloadFrames();
 
     // Interaction
     function selectFrame(index) {
