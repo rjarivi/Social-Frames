@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social Frames - Editor</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --neon-green: #32FFB4;
+      --neon-hover: #21D492;
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --dark-bg: #0D0D11;
+      --text-main: #FFFFFF;
+      --text-muted: #A1A1AA;
+    }
+
+    * {
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--text-main);
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Moving fluid background */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      background:
+        radial-gradient(circle at 15% 50%, rgba(50, 255, 180, 0.08), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(138, 43, 226, 0.08), transparent 25%);
+      filter: blur(60px);
+      animation: fluidMove 20s infinite alternate;
+    }
+
+    @keyframes fluidMove {
+      0% {
+        transform: scale(1);
+      }
+
+      100% {
+        transform: scale(1.1);
+      }
+    }
+
+    /* Back Button */
+    .nav-bar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 100;
+    }
+
+    .btn-back {
+      background: rgba(0, 0, 0, 0.4);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--neon-green);
+    }
+
+    /* Main Container */
+    .app-container {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Glass Card Structure */
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border: 1px solid var(--glass-border);
+      border-radius: 32px;
+      box-shadow: 0 40px 80px -12px rgba(0, 0, 0, 0.6);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 450px;
+      overflow: hidden;
+    }
+
+    .preview-panel {
+      flex: 1;
+      padding: 30px;
+      background: rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 350px;
+      position: relative;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .canvas-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px dashed rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      background: rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .canvas-container.drag-over {
+      border-color: var(--neon-green);
+      background: rgba(50, 255, 180, 0.05);
+      transform: scale(0.98);
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: none;
+      object-fit: contain;
+    }
+
+    .change-image-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      z-index: 10;
+    }
+
+    .change-image-btn:hover {
+      background: var(--neon-green);
+      color: black;
+    }
+
+    .controls-wrapper {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 300px;
+      align-items: center;
+    }
+
+    .mode-controls {
+      display: flex;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 12px;
+      padding: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      width: fit-content;
+    }
+
+    .control-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .control-btn:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .control-btn.active {
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--neon-green);
+    }
+
+    .zoom-control {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      padding: 0 10px;
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: transparent;
+    }
+
+    input[type=range]:focus {
+      outline: none;
+    }
+
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 6px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: var(--neon-green);
+      cursor: pointer;
+      -webkit-appearance: none;
+      margin-top: -6px;
+      box-shadow: 0 0 10px rgba(50, 255, 180, 0.5);
+      transition: transform 0.1s;
+    }
+
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .upload-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .upload-placeholder:hover {
+      color: var(--neon-green);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .upload-icon-wrapper {
+      width: 64px;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      transition: transform 0.3s ease;
+    }
+
+    .upload-placeholder:hover .upload-icon-wrapper {
+      transform: scale(1.1) rotate(5deg);
+      background: rgba(50, 255, 180, 0.1);
+    }
+
+    .controls-panel {
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .header-group h1 {
+      font-size: 2.2rem;
+      margin: 0 0 8px 0;
+      background: linear-gradient(135deg, #fff 0%, var(--neon-green) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.03em;
+    }
+
+    .header-group p {
+      margin: 0;
+      color: var(--text-muted);
+      line-height: 1.5;
+      font-weight: 300;
+    }
+
+    .frame-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: block;
+      font-weight: 600;
+    }
+
+    .frame-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .frame-option {
+      aspect-ratio: 1;
+      border-radius: 16px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid transparent;
+      background: rgba(0, 0, 0, 0.3);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .frame-option:hover {
+      transform: translateY(-4px);
+    }
+
+    .frame-option.selected {
+      border-color: var(--neon-green);
+      box-shadow: 0 0 20px rgba(50, 255, 180, 0.2);
+    }
+
+    .frame-option img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0.8;
+      transition: opacity 0.3s;
+      padding: 4px;
+    }
+
+    .frame-option:hover img,
+    .frame-option.selected img {
+      opacity: 1;
+    }
+
+    .action-group {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .btn-download {
+      width: 100%;
+      padding: 18px;
+      background: var(--neon-green);
+      color: #0D0D11;
+      border: none;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-download:hover:not(:disabled) {
+      background: white;
+      box-shadow: 0 0 30px rgba(50, 255, 180, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .btn-download:disabled {
+      background: #2A2A30;
+      color: #555;
+      cursor: not-allowed;
+    }
+
+    /* Creator */
+    .creator-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .creator-text {
+      font-size: 0.8rem;
+      color: #555;
+    }
+
+    .creator-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Desktop Wide */
+    @media (min-width: 1024px) {
+      .glass-card {
+        flex-direction: row;
+        max-width: 1200px;
+        height: 700px;
+      }
+
+      .preview-panel {
+        flex: 1.4;
+        height: 100%;
+        padding: 60px;
+        background: rgba(0, 0, 0, 0.15);
+      }
+
+      .controls-panel {
+        flex: 1;
+        height: 100%;
+        padding: 60px;
+        justify-content: center;
+        border-left: 1px solid rgba(255, 255, 255, 0.03);
+      }
+
+      .canvas-wrapper {
+        max-width: 500px;
+      }
+
+      .frame-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+
+      .action-group {
+        margin-top: 40px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .glass-card {
+        border-radius: 0;
+        height: 100vh;
+        border: none;
+      }
+
+      .app-container {
+        padding: 0;
+      }
+
+      .preview-panel {
+        padding: 20px;
+      }
+
+      .nav-bar {
+        top: 10px;
+        left: 10px;
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    #upload-input {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="bg-animation"></div>
+
+  <div class="nav-bar">
+    <a href="index.html" class="btn-back">
+      <i data-lucide="arrow-left" size="16"></i> Back
+    </a>
+  </div>
+
+  <div class="app-container">
+    <div class="glass-card">
+
+      <!-- Left: Visuals -->
+      <div class="preview-panel">
+        <div class="canvas-wrapper">
+          <div class="canvas-container" id="drop-zone">
+            <input type="file" id="upload-input" accept="image/*">
+            <button class="change-image-btn hidden" id="change-image-btn"
+              onclick="document.getElementById('upload-input').click()">
+              <i data-lucide="image-plus" size="14"></i> Change
+            </button>
+            <div class="upload-placeholder" onclick="document.getElementById('upload-input').click()">
+              <div class="upload-icon-wrapper">
+                <i data-lucide="image-plus" size="32" color="white"></i>
+              </div>
+              <span style="font-weight: 600; font-size: 1.1rem; margin-bottom: 6px;">Upload Image</span>
+              <span style="font-size: 0.9rem; color: #666;">Drag & Drop or Click</span>
+            </div>
+            <canvas id="main-canvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Controls Wrapper -->
+        <div class="controls-wrapper hidden" id="img-controls">
+          <div class="mode-controls">
+            <button class="control-btn active" id="btn-fill">
+              <i data-lucide="maximize" size="16"></i> Fill
+            </button>
+            <button class="control-btn" id="btn-fit">
+              <i data-lucide="minimize" size="16"></i> Fit
+            </button>
+          </div>
+          <div class="zoom-control">
+            <i data-lucide="zoom-in" size="16"></i>
+            <input type="range" id="zoom-slider" min="1" max="3" step="0.05" value="1">
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Controls -->
+      <div class="controls-panel">
+        <div class="header-group">
+          <h1 id="brand-title">Parti Frame</h1>
+          <p id="brand-desc">Transform your images with exclusive digital frames.</p>
+        </div>
+
+        <div>
+          <span class="frame-label">Choose Style</span>
+          <div class="frame-grid" id="frame-grid">
+            <!-- Dynamic Frames -->
+          </div>
+        </div>
+
+        <div class="action-group">
+          <button id="download-btn" class="btn-download" disabled>
+            <i data-lucide="download"></i> Download Masterpiece
+          </button>
+          <div class="creator-links">
+            <!-- Static footer or dynamic if needed -->
+            <span class="creator-text">Powered by Social Frames</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="assets/js/data.js"></script>
+
+  <script>
+    // Initialize Icons
+    lucide.createIcons();
+
+    // 1. Get Config
+    const params = new URLSearchParams(window.location.search);
+    const brandId = params.get('brand') || 'parti';
+    const brandsData = window.brands || [];
+    const brand = brandsData.find(b => b.id === brandId) || brandsData[0];
+
+    // 2. Setup UI
+    if (brand) {
+      document.getElementById('brand-title').textContent = brand.name + (brand.name.includes("Frame") ? "" : " Frame");
+      document.getElementById('brand-desc').textContent = brand.description;
+
+      // 3. Setup Frames
+      const framesData = brand.frames;
+      window.framesData = framesData; // Make framesData accessible globally for preloadFrames
+    }
+
+    const loadedFrameImages = [];
+    let currentFrameIndex = 0;
+
+    // Check if brand exists before setting up frames
+    if (brand) {
+      const frameGrid = document.getElementById('frame-grid');
+      frameGrid.innerHTML = ''; // clear
+
+      brand.frames.forEach((src, index) => {
+        const div = document.createElement('div');
+        div.className = `frame-option ${index === 0 ? 'selected' : ''}`;
+        div.onclick = () => selectFrame(index);
+
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = `Frame ${index + 1}`;
+        img.onerror = () => { img.style.opacity = '0.3'; } // Fallback visual
+
+        div.appendChild(img);
+        frameGrid.appendChild(div);
+      });
+    }
+
+    // --- Core Logic ---
+    let uploadedImage = null;
+    let fitMode = 'cover';
+    let currentScale = 1;
+    let renderRequested = false;
+    const CANVAS_SIZE = 1080;
+
+    const canvas = document.getElementById('main-canvas');
+    const ctx = canvas.getContext('2d');
+    const uploadInput = document.getElementById('upload-input');
+    const placeholder = document.querySelector('.upload-placeholder');
+    const dropZone = document.getElementById('drop-zone');
+    const downloadBtn = document.getElementById('download-btn');
+    const changeBtn = document.getElementById('change-image-btn');
+    const imgControls = document.getElementById('img-controls');
+    const btnFill = document.getElementById('btn-fill');
+    const btnFit = document.getElementById('btn-fit');
+    const zoomSlider = document.getElementById('zoom-slider');
+
+    // Attach listeners
+    btnFill.onclick = () => setFitMode('cover');
+    btnFit.onclick = () => setFitMode('contain');
+    zoomSlider.oninput = (e) => updateZoom(e.target.value);
+    downloadBtn.onclick = handleDownload;
+
+    // Preload
+    function preloadFrames() {
+      let loadedCount = 0;
+      framesData.forEach((src, index) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = src;
+        img.onload = () => {
+          loadedFrameImages[index] = img;
+          loadedCount++;
+          if (loadedCount === framesData.length && uploadedImage) scheduleRender();
+        };
+        loadedFrameImages[index] = img;
+      });
+    }
+    preloadFrames();
+
+    // Interaction
+    function selectFrame(index) {
+      currentFrameIndex = index;
+      document.querySelectorAll('.frame-option').forEach((el, i) => {
+        if (i === index) el.classList.add('selected');
+        else el.classList.remove('selected');
+      });
+      if (uploadedImage) scheduleRender();
+    }
+
+    function setFitMode(mode) {
+      fitMode = mode;
+      currentScale = 1;
+      zoomSlider.value = 1;
+      if (mode === 'cover') {
+        btnFill.classList.add('active');
+        btnFit.classList.remove('active');
+      } else {
+        btnFit.classList.add('active');
+        btnFill.classList.remove('active');
+      }
+      if (uploadedImage) scheduleRender();
+    }
+
+    function updateZoom(val) {
+      currentScale = parseFloat(val);
+      if (uploadedImage) scheduleRender();
+    }
+
+    // Upload
+    uploadInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
+
+    function handleFile(file) {
+      if (!file || !file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          uploadedImage = img;
+          placeholder.classList.add('hidden');
+          canvas.style.display = 'block';
+          changeBtn.classList.remove('hidden');
+          imgControls.classList.remove('hidden');
+          downloadBtn.disabled = false;
+          currentScale = 1;
+          zoomSlider.value = 1;
+          scheduleRender();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Render
+    function scheduleRender() {
+      if (!renderRequested) {
+        renderRequested = true;
+        requestAnimationFrame(renderCanvas);
+      }
+    }
+
+    function renderCanvas() {
+      renderRequested = false;
+      if (!uploadedImage) return;
+
+      canvas.width = CANVAS_SIZE;
+      canvas.height = CANVAS_SIZE;
+
+      ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+      const imgRatio = uploadedImage.width / uploadedImage.height;
+
+      let baseW, baseH;
+      if (fitMode === 'cover') {
+        if (imgRatio > 1) { // Landscape
+          baseH = CANVAS_SIZE;
+          baseW = CANVAS_SIZE * imgRatio;
+        } else { // Portrait
+          baseW = CANVAS_SIZE;
+          baseH = CANVAS_SIZE / imgRatio;
+        }
+      } else { // Contain
+        if (imgRatio > 1) {
+          baseW = CANVAS_SIZE;
+          baseH = CANVAS_SIZE / imgRatio;
+        } else {
+          baseH = CANVAS_SIZE;
+          baseW = CANVAS_SIZE * imgRatio;
+        }
+      }
+
+      const drawW = baseW * currentScale;
+      const drawH = baseH * currentScale;
+      const offsetX = (CANVAS_SIZE - drawW) / 2;
+      const offsetY = (CANVAS_SIZE - drawH) / 2;
+
+      ctx.drawImage(uploadedImage, offsetX, offsetY, drawW, drawH);
+
+      const frameImg = loadedFrameImages[currentFrameIndex];
+      if (frameImg && frameImg.complete && frameImg.naturalWidth > 0) {
+        ctx.drawImage(frameImg, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+      }
+    }
+
+    function handleDownload() {
+      if (!uploadedImage) return;
+      const link = document.createElement('a');
+      link.download = `${brand.id}-frame-masterpiece.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+  </script>
+</body>
+
+</html>

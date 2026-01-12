@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social Frames - Choose Your Community</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --neon-green: #32FFB4;
+      --neon-hover: #21D492;
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --dark-bg: #0D0D11;
+      --text-main: #FFFFFF;
+      --text-muted: #A1A1AA;
+    }
+
+    * {
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--text-main);
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Fluid Background */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      background:
+        radial-gradient(circle at 15% 50%, rgba(50, 255, 180, 0.05), transparent 35%),
+        radial-gradient(circle at 85% 20%, rgba(138, 43, 226, 0.05), transparent 35%),
+        radial-gradient(circle at 50% 80%, rgba(50, 255, 180, 0.03), transparent 35%);
+      filter: blur(80px);
+      animation: fluidMove 25s infinite alternate;
+    }
+
+    @keyframes fluidMove {
+      0% {
+        transform: scale(1);
+      }
+
+      100% {
+        transform: scale(1.1);
+      }
+    }
+
+    /* Container */
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 16px 0;
+      background: linear-gradient(135deg, #fff 0%, var(--neon-green) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.03em;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Search */
+    .search-wrapper {
+      width: 100%;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      padding: 16px 24px 16px 50px;
+      border-radius: 20px;
+      color: white;
+      font-size: 1rem;
+      backdrop-filter: blur(20px);
+      transition: all 0.3s ease;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .search-input:focus {
+      border-color: var(--neon-green);
+      box-shadow: 0 0 20px rgba(50, 255, 180, 0.1);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* Grid */
+    .brands-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .brand-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+      min-height: 250px;
+      text-decoration: none;
+      backdrop-filter: blur(10px);
+    }
+
+    .brand-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(50, 255, 180, 0.3);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .brand-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 50% 100%, rgba(50, 255, 180, 0.05), transparent 50%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .brand-card:hover::before {
+      opacity: 1;
+    }
+
+    .brand-logo {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
+      transition: transform 0.3s;
+    }
+
+    .brand-card:hover .brand-logo {
+      transform: scale(1.1);
+    }
+
+    .brand-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+      margin: 0;
+    }
+
+    .brand-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin: 0;
+    }
+
+    .card-arrow {
+      margin-top: auto;
+      color: var(--neon-green);
+      opacity: 0;
+      transform: translateX(-10px);
+      transition: all 0.3s;
+    }
+
+    .brand-card:hover .card-arrow {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: #1A1A1E;
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 40px;
+      width: 90%;
+      max-width: 600px;
+      position: relative;
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-overlay.open .modal-content {
+      transform: scale(1);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+
+    .close-modal:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .modal-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 30px;
+      text-align: center;
+      background: linear-gradient(135deg, #fff 0%, var(--neon-green) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 600px) {
+      .options-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .option-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .option-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--neon-green);
+    }
+
+    .option-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(50, 255, 180, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--neon-green);
+    }
+
+    .option-h {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: white;
+      margin: 0;
+    }
+
+    .option-p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .btn-action {
+      margin-top: auto;
+      background: white;
+      color: black;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      width: 100%;
+      text-align: center;
+    }
+
+    .btn-action.primary {
+      background: var(--neon-green);
+    }
+
+    .btn-action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(50, 255, 180, 0.3);
+    }
+
+    /* Add New Card Special Style */
+    .brand-card.add-new {
+      border-style: dashed;
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .brand-card.add-new:hover {
+      border-color: var(--neon-green);
+      background: rgba(50, 255, 180, 0.05);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="bg-animation"></div>
+
+  <div class="container">
+    <header>
+      <h1>Social Frames</h1>
+      <p class="subtitle">Select your community and start framing your digital identity.</p>
+    </header>
+
+    <div class="search-wrapper">
+      <i data-lucide="search" class="search-icon"></i>
+      <input type="text" class="search-input" placeholder="Search brands..." id="search-box">
+    </div>
+
+    <div class="brands-grid" id="brands-grid">
+      <!-- Cards will be injected here -->
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="add-modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal()">
+        <i data-lucide="x"></i>
+      </button>
+
+      <h2 class="modal-title">Add Your Community</h2>
+
+      <div class="options-grid">
+        <!-- Newbie Option -->
+        <div class="option-card">
+          <div class="option-icon">
+            <i data-lucide="sparkles"></i>
+          </div>
+          <h3 class="option-h">New to Tech?</h3>
+          <p class="option-p">Simply fill out our form with your logo and frames. We'll handle the coding!</p>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSdIzp6r3iaD_6jeKO3ikiSbFnqsNDvEqt4nxImGlQvvs_jbZw/viewform"
+            target="_blank" class="btn-action primary">Submit Request</a>
+        </div>
+
+        <!-- Pro Option -->
+        <div class="option-card">
+          <div class="option-icon">
+            <i data-lucide="github"></i>
+          </div>
+          <h3 class="option-h">Developer?</h3>
+          <p class="option-p">Fork the repo, add your assets, and submit a Pull Request.</p>
+          <a href="https://github.com/your-repo/social-frames" target="_blank" class="btn-action">View Instructions</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/data.js"></script>
+
+  <script>
+    // Initialize Icons
+    lucide.createIcons();
+
+    const grid = document.getElementById('brands-grid');
+    const searchBox = document.getElementById('search-box');
+    const modal = document.getElementById('add-modal');
+
+    // Modal Logic
+    function openModal() {
+      modal.classList.add('open');
+    }
+
+    function closeModal() {
+      modal.classList.remove('open');
+    }
+
+    // Close on outside click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    function renderCards(filter = '') {
+      grid.innerHTML = '';
+      const brandsData = window.brands || []; // Access global window object
+      const filtered = brandsData.filter(b => b.name.toLowerCase().includes(filter.toLowerCase()));
+
+      filtered.forEach(brand => {
+        const card = document.createElement('a');
+        card.className = 'brand-card';
+        card.href = `editor.html?brand=${brand.id}`;
+
+        card.innerHTML = `
+          <img src="${brand.logo}" alt="${brand.name} Logo" class="brand-logo" onerror="this.src='./assets/brands/parti/logo.png'">
+          <h2 class="brand-name">${brand.name}</h2>
+          <p class="brand-desc">${brand.description || 'Custom Frames'}</p>
+          <div class="card-arrow">
+             <i data-lucide="arrow-right"></i>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+
+      // ALWAYS Append "Add New" Card
+      const addCard = document.createElement('div');
+      addCard.className = 'brand-card add-new';
+      addCard.onclick = openModal;
+      addCard.innerHTML = `
+        <div class="brand-logo" style="display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.05);border-radius:50%;">
+           <i data-lucide="plus" size="40" color="var(--neon-green)"></i>
+        </div>
+        <h2 class="brand-name">Add Yours</h2>
+        <p class="brand-desc">Submit your own community frames</p>
+      `;
+      grid.appendChild(addCard);
+
+      lucide.createIcons();
+    }
+
+    // Initial Render
+    if (window.brands) {
+      renderCards();
+    } else {
+      // Fallback or retry if script loading is slow (unlikely for local)
+      console.error("Brands data not loaded");
+      grid.innerHTML = "<p style='color: white;'>Failed to load brand data.</p>";
+    }
+
+    // Search Listener
+    searchBox.addEventListener('input', (e) => {
+      renderCards(e.target.value);
+    });
+
+  </script>
+</body>
+
+</html>
