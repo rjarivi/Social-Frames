@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Social Frames - Choose Your Community</title>
+  <link rel="icon" type="image/png" href="assets/Social-Frames.png">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -433,6 +434,69 @@
       border-color: var(--neon-green);
       background: rgba(50, 255, 180, 0.05);
     }
+
+    /* Logo Animation */
+    .logo-loader {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 20px auto;
+      position: relative;
+    }
+
+    .logo-loader::before {
+      content: '';
+      width: 60px;
+      height: 6px;
+      background: rgba(50, 255, 180, 0.2);
+      position: absolute;
+      top: 72px;
+      left: 0;
+      border-radius: 50%;
+      animation: shadowPulse 0.5s linear infinite;
+    }
+
+    .jumping-logo {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      animation: jumpRotate 0.5s linear infinite;
+      object-fit: contain;
+    }
+
+    @keyframes jumpRotate {
+      15% {
+        border-bottom-right-radius: 3px;
+      }
+
+      25% {
+        transform: translateY(9px) rotate(22.5deg);
+      }
+
+      50% {
+        transform: translateY(18px) scale(1, .9) rotate(45deg);
+        border-bottom-right-radius: 40px;
+      }
+
+      75% {
+        transform: translateY(9px) rotate(67.5deg);
+      }
+
+      100% {
+        transform: translateY(0) rotate(90deg);
+      }
+    }
+
+    @keyframes shadowPulse {
+
+      0%,
+      100% {
+        transform: scale(1, 1);
+      }
+
+      50% {
+        transform: scale(1.2, 1);
+      }
+    }
   </style>
 </head>
 
@@ -442,6 +506,9 @@
 
   <div class="container">
     <header>
+      <div class="logo-loader">
+        <img src="assets/Social-Frames.png" alt="Social Frames Logo" class="jumping-logo">
+      </div>
       <h1>Social Frames</h1>
       <p class="subtitle">Select your community and start framing your digital identity.</p>
     </header>
