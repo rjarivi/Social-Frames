@@ -36,13 +36,14 @@ const BRANCH = 'main';
 // Function triggered on Form Submit
 function onFormSubmit(e) {
   // 1. Get Data from Form
+  // NOTE: Adjust these keys to match your exact Form Question Titles
   const responses = e.namedValues;
   
-  const brandName = responses['Community Name'][0]; 
+  const brandName = responses['Brand Name'][0]; 
   const brandDesc = responses['Short Description / Slogan'][0];
-  const logoUrl = responses['Community Logo URL'][0];
-  const framesText = responses['Frame Template URLs'][0];
-  const contact = responses['Your Email / Discord Handle'][0]; 
+  const logoUrl = responses['Brand Logo URL'][0];
+  const framesText = responses['Frame Templates URL'][0];
+  // const contact = responses['Your Email / Discord Handle'][0]; // This field seems missing in your screenshots 
 
   const brandId = brandName.toLowerCase().replace(/[^a-z0-9]/g, '-');
   const frameUrls = framesText.split(/\r?\n/).map(url => url.trim()).filter(url => url.length > 0);
@@ -81,8 +82,8 @@ function updateGitHubFile(newEntry) {
   const sha = fileData.sha;
 
   // B. Extract JSON from JS "window.brands = [...];"
-  // Remove "window.brands =" from start and ";" from end
-  const jsonString = fileContent.replace('window.brands =', '').replace(';', '').trim();
+  // Robust method: Find the first '[' and last ']'
+  const jsonString = fileContent.substring(fileContent.indexOf('['), fileContent.lastIndexOf(']') + 1);
   
   let brands = JSON.parse(jsonString);
   
