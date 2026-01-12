@@ -598,57 +598,37 @@
     </div>
   </div>
 
+  <script src="assets/js/data.js"></script>
+
   <script>
     // Initialize Icons
     lucide.createIcons();
 
-    // --- Core Logic ---
-    let uploadedImage = null;
-    let fitMode = 'cover';
-    let currentScale = 1;
-    let renderRequested = false;
-    const CANVAS_SIZE = 1080;
+    // 1. Get Config
+    const params = new URLSearchParams(window.location.search);
+    const brandId = params.get('brand') || 'parti';
+    const brandsData = window.brands || [];
+    const brand = brandsData.find(b => b.id === brandId) || brandsData[0];
 
-    // Elements
-    const canvas = document.getElementById('main-canvas');
-    const ctx = canvas.getContext('2d');
-    const uploadInput = document.getElementById('upload-input');
-    const placeholder = document.querySelector('.upload-placeholder');
-    const dropZone = document.getElementById('drop-zone');
-    const downloadBtn = document.getElementById('download-btn');
-    const changeBtn = document.getElementById('change-image-btn');
-    const imgControls = document.getElementById('img-controls');
-    const btnFill = document.getElementById('btn-fill');
-    const btnFit = document.getElementById('btn-fit');
-    const zoomSlider = document.getElementById('zoom-slider');
+    // 2. Setup UI
+    if (brand) {
+      document.getElementById('brand-title').textContent = brand.name + (brand.name.includes("Frame") ? "" : " Frame");
+      document.getElementById('brand-desc').textContent = brand.description || 'Custom Frames';
 
-    // Globals for frames
-    let loadedFrameImages = [];
+      // 3. Setup Frames
+      const framesData = brand.frames;
+      window.framesData = framesData;
+    }
+
+    const loadedFrameImages = [];
     let currentFrameIndex = 0;
-    let currentBrand = null;
 
-    // 1. Fetch Config
-    fetch('assets/data.json')
-      .then(r => r.json())
-      .then(brands => {
-        initEditor(brands);
-      })
-      .catch(err => console.error("Failed to load brands:", err));
-
-    function initEditor(brands) {
-      const params = new URLSearchParams(window.location.search);
-      const brandId = params.get('brand') || 'parti';
-      currentBrand = brands.find(b => b.id === brandId) || brands[0]; // Fallback to first
-
-      // Set UI
-      document.getElementById('brand-title').textContent = currentBrand.name + (currentBrand.name.includes("Frame") ? "" : " Frame");
-      document.getElementById('brand-desc').textContent = currentBrand.description || 'Custom Frames';
-
-      // Setup Frames Grid
+    // Check if brand exists before setting up frames
+    if (brand) {
       const frameGrid = document.getElementById('frame-grid');
       frameGrid.innerHTML = '';
 
-      currentBrand.frames.forEach((src, index) => {
+      brand.frames.forEach((src, index) => {
         const div = document.createElement('div');
         div.className = `frame-option ${index === 0 ? 'selected' : ''}`;
         div.onclick = () => selectFrame(index);
@@ -661,26 +641,51 @@
         div.appendChild(img);
         frameGrid.appendChild(div);
       });
-
-      // Start preloading
-      preloadFrames();
     }
 
+    // --- Core Logic ---
+    let uploadedImage = null;
+    let fitMode = 'cover';
+    let currentScale = 1;
+    let renderRequested = false;
+    const CANVAS_SIZE = 1080;
+
+    const canvas = document.getElementById('main-canvas');
+    const ctx = canvas.getContext('2d');
+    const uploadInput = document.getElementById('upload-input');
+    const placeholder = document.querySelector('.upload-placeholder');
+    const dropZone = document.getElementById('drop-zone');
+    const downloadBtn = document.getElementById('download-btn');
+    const changeBtn = document.getElementById('change-image-btn');
+    const imgControls = document.getElementById('img-controls');
+    const btnFill = document.getElementById('btn-fill');
+    const btnFit = document.getElementById('btn-fit');
+    const zoomSlider = document.getElementById('zoom-slider');
+
+    // Attach listeners
+    btnFill.onclick = () => setFitMode('cover');
+    btnFit.onclick = () => setFitMode('contain');
+    zoomSlider.oninput = (e) => updateZoom(e.target.value);
+    downloadBtn.onclick = handleDownload;
+
+    // Globals for frames 
+    // Note: window.framesData is set above
     function preloadFrames() {
-      if (!currentBrand) return;
       let loadedCount = 0;
-      currentBrand.frames.forEach((src, index) => {
+      if (!window.framesData) return;
+      window.framesData.forEach((src, index) => {
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.src = src;
         img.onload = () => {
           loadedFrameImages[index] = img;
           loadedCount++;
-          if (loadedCount === currentBrand.frames.length && uploadedImage) scheduleRender();
+          if (loadedCount === window.framesData.length && uploadedImage) scheduleRender();
         };
         loadedFrameImages[index] = img;
       });
     }
+    preloadFrames();
 
     // Interaction
     function selectFrame(index) {
