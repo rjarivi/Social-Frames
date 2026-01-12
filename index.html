@@ -226,6 +226,57 @@
       transform: translateX(0);
     }
 
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 0;
+      margin-top: 40px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    footer p {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .heart-icon {
+      width: 18px;
+      height: 18px;
+      fill: #ef4444;
+      /* Red fill */
+      color: #ef4444;
+      animation: pulse 1.5s infinite;
+    }
+
+    footer a {
+      color: var(--neon-green);
+      text-decoration: none;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+
+    footer a:hover {
+      opacity: 0.8;
+      text-decoration: underline;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
     /* Modal Styles */
     .modal-overlay {
       position: fixed;
@@ -403,6 +454,11 @@
     <div class="brands-grid" id="brands-grid">
       <!-- Cards will be injected here -->
     </div>
+
+    <footer>
+      <p>Made with <i data-lucide="heart" class="heart-icon"></i> by <a href="https://x.com/rjarivi"
+          target="_blank">@rjarivi</a></p>
+    </footer>
   </div>
 
   <!-- Modal -->
