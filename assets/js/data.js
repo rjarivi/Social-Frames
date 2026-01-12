@@ -2,7 +2,7 @@ window.brands = [
     {
         "id": "parti",
         "name": "Parti",
-        "logo": "assets/brands/parti/logo.png",
+        "logo": "assets/brands/parti/Parti-Logo.svg",
         "description": "Frame Your Masterpiece",
         "frames": [
             "assets/brands/parti/frame1.png",
