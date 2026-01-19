@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://unpkg.com https://fonts.googleapis.com https://greedy-puffin-630.convex.cloud https://*.convex.cloud;">
   <title>Social Frames - Choose Your Community</title>
   <link rel="icon" type="image/png" href="assets/Social-Frames.png">
 
@@ -545,8 +547,7 @@
           </div>
           <h3 class="option-h">New to Tech?</h3>
           <p class="option-p">Simply fill out our form with your logo and frames. We'll handle the coding!</p>
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSdIzp6r3iaD_6jeKO3ikiSbFnqsNDvEqt4nxImGlQvvs_jbZw/viewform"
-            target="_blank" class="btn-action primary">Submit Request</a>
+          <a href="submit.html" class="btn-action primary">Submit Request</a>
         </div>
 
         <!-- Pro Option -->
@@ -564,72 +565,8 @@
   </div>
 
   <script src="assets/js/data.js"></script>
-
-  <script>
-    // Initialize Icons
-    lucide.createIcons();
-
-    const grid = document.getElementById('brands-grid');
-    const searchBox = document.getElementById('search-box');
-    const modal = document.getElementById('add-modal');
-
-    // Modal Logic
-    function openModal() { modal.classList.add('open'); }
-    function closeModal() { modal.classList.remove('open'); }
-    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-
-    function renderCards(filter = '') {
-      grid.innerHTML = '';
-      const brandsData = window.brands || []; // Access global window object
-      const filtered = brandsData.filter(b => b.name.toLowerCase().includes(filter.toLowerCase()));
-
-      filtered.forEach(brand => {
-        const card = document.createElement('a');
-        card.className = 'brand-card';
-        card.href = `editor.html?brand=${brand.id}`;
-
-        card.innerHTML = `
-          <img src="${brand.logo}" alt="${brand.name} Logo" class="brand-logo" onerror="this.src='./assets/brands/parti/logo.png'">
-          <h2 class="brand-name">${brand.name}</h2>
-          <p class="brand-desc">${brand.description || 'Custom Frames'}</p>
-          <div class="card-arrow">
-             <i data-lucide="arrow-right"></i>
-          </div>
-        `;
-
-        grid.appendChild(card);
-      });
-
-      // ALWAYS Append "Add New" Card
-      const addCard = document.createElement('div');
-      addCard.className = 'brand-card add-new';
-      addCard.onclick = openModal;
-      addCard.innerHTML = `
-        <div class="brand-logo" style="display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.05);border-radius:50%;">
-           <i data-lucide="plus" size="40" color="var(--neon-green)"></i>
-        </div>
-        <h2 class="brand-name">Add Yours</h2>
-        <p class="brand-desc">Submit your own community frames</p>
-      `;
-      grid.appendChild(addCard);
-
-      lucide.createIcons();
-    }
-
-    // Initial Render
-    if (window.brands) {
-      renderCards();
-    } else {
-      console.error("Brands data not loaded");
-      grid.innerHTML = "<p style='color: white;'>Failed to load brand data.</p>";
-    }
-
-    // Search Listener
-    searchBox.addEventListener('input', (e) => {
-      renderCards(e.target.value);
-    });
-
-  </script>
+  <script type="module" src="assets/js/home.ts"></script>
+</body>
 </body>
 
 </html>
