@@ -86,7 +86,8 @@ function renderCards(filter = '') {
         img.className = 'brand-logo';
         // Fix for Google Drive links or missing images
         img.onerror = function () {
-            (this as HTMLImageElement).src = './assets/brands/parti/logo.png';
+            this.onerror = null; // Prevent infinite loop
+            this.src = 'https://rjarivi.github.io/Social-Frames/assets/Social-Frames.png';
             console.warn("Image failed, using fallback for", brand.name);
         };
         card.appendChild(img);

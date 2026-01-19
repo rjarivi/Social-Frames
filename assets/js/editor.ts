@@ -77,7 +77,10 @@ function renderFrameGrid(brand: any) {
         const img = document.createElement('img');
         img.src = src;
         img.alt = `Frame ${index + 1}`;
-        img.onerror = () => { img.style.opacity = '0.3'; }
+        img.onerror = function () {
+            this.onerror = null;
+            this.style.opacity = '0.3';
+        }
 
         div.appendChild(img);
         frameGrid.appendChild(div);
