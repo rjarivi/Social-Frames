@@ -12,6 +12,10 @@ declare global {
 
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../convex/_generated/api";
+import { brands as localBrands } from "./data.js";
+
+// Initialize global brands with local data immediately
+window.brands = localBrands;
 
 // Initialize Icons
 lucide.createIcons();

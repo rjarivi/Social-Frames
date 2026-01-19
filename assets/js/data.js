@@ -1,4 +1,4 @@
-window.brands = [
+export const brands = [
     {
         "id": "parti",
         "name": "Parti",

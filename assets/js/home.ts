@@ -13,6 +13,10 @@ declare global {
 
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../convex/_generated/api";
+import { brands as localBrands } from "./data.js";
+
+// Initialize global brands with local data immediately
+window.brands = localBrands;
 
 // Initialize Icons
 lucide.createIcons();
@@ -35,7 +39,8 @@ if (modal) {
 
 // Main Init Function
 async function init() {
-    let allBrands = window.brands || [];
+    // 1. Show hardcoded brands immediately
+    renderCards();
 
     try {
         console.log("Fetching brands from Convex...");
@@ -43,6 +48,7 @@ async function init() {
         console.log("✅ Received brands:", convexBrands);
 
         if (convexBrands) {
+            let allBrands = window.brands || [];
             // Merge: Prepend Convex brands
             allBrands = [...convexBrands, ...allBrands];
 
@@ -52,12 +58,13 @@ async function init() {
             allBrands = Array.from(unique.values());
 
             window.brands = allBrands; // Update global
+
+            // 2. Re-render with new data
+            renderCards();
         }
     } catch (e) {
         console.error("❌ Convex connection error:", e);
     }
-
-    renderCards();
 }
 
 function renderCards(filter = '') {
