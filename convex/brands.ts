@@ -56,3 +56,46 @@ export const submitBrand = mutation({
         });
     },
 });
+
+// 4. Get PENDING brands (Admin only)
+export const getPendingBrands = query({
+    args: {},
+    handler: async (ctx) => {
+        const brands = await ctx.db
+            .query("brands")
+            .filter((q) => q.eq(q.field("status"), "pending"))
+            .order("desc")
+            .collect();
+
+        // Map storage IDs
+        return await Promise.all(
+            brands.map(async (b) => ({
+                ...b,
+                logo: isStorageId(b.logo) ? (await ctx.storage.getUrl(b.logo)) || b.logo : b.logo,
+                frames: await Promise.all(
+                    b.frames.map(async (f) =>
+                        isStorageId(f) ? (await ctx.storage.getUrl(f)) || f : f
+                    )
+                ),
+            }))
+        );
+    },
+});
+
+// 5. Approve a brand
+export const approveBrand = mutation({
+    args: { id: v.id("brands") },
+    handler: async (ctx, args) => {
+        await ctx.db.patch(args.id, { status: "approved" });
+    },
+});
+
+// 6. Delete a brand (Reject)
+export const deleteBrand = mutation({
+    args: { id: v.id("brands") },
+    handler: async (ctx, args) => {
+        // Optional: Delete files from storage to save space?
+        // For now, just remove the record.
+        await ctx.db.delete(args.id);
+    },
+});
